@@ -13,8 +13,8 @@
 // It fails open: any internal error lets the turn end.
 
 import { createHash } from 'node:crypto';
-import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { tmpdir } from 'node:os';
+import { mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
+import { homedir } from 'node:os';
 import { basename, extname, join } from 'node:path';
 
 const EDIT_TOOLS = new Set(['Edit', 'Write', 'MultiEdit', 'NotebookEdit']);
@@ -64,10 +64,22 @@ const OBSERVE_TOOL_RE = /(screenshot|snapshot|read_page|get_page_text|console_me
 const OBSERVE_ACTIONS = new Set(['screenshot', 'zoom']);
 
 function ledgerPath(input) {
-  const dir = process.env.FABLIZE_GATE_DIR || join(tmpdir(), 'fablize-gate');
-  mkdirSync(dir, { recursive: true });
+  // Per-user directory, not the shared temp dir: a predictable path in a
+  // world-writable location could be pre-created or symlinked by another user.
+  const dir =
+    process.env.FABLIZE_GATE_DIR ||
+    join(process.env.CLAUDE_CONFIG_DIR || join(homedir(), '.claude'), 'fablize-gate');
+  mkdirSync(dir, { recursive: true, mode: 0o700 });
   const key = `${input.session_id || 'no-session'}|${input.agent_id || ''}`;
   return join(dir, createHash('sha256').update(key).digest('hex').slice(0, 24) + '.json');
+}
+
+// Write to a fresh temp name (fails if it exists) and rename over the ledger,
+// so a link planted at the ledger path is replaced, never followed.
+function save(path, ledger) {
+  const tmp = `${path}.${process.pid}.tmp`;
+  writeFileSync(tmp, JSON.stringify(ledger), { flag: 'wx', mode: 0o600 });
+  renameSync(tmp, path);
 }
 
 function load(path) {
@@ -154,13 +166,13 @@ function main() {
     const reason = stopDecision(input, ledger);
     if (!reason) return;
     ledger.blockedAt = ledger.lastChange;
-    writeFileSync(path, JSON.stringify(ledger));
+    save(path, ledger);
     process.stdout.write(JSON.stringify({ decision: 'block', reason }));
     return;
   } else {
     return;
   }
-  writeFileSync(path, JSON.stringify(ledger));
+  save(path, ledger);
 }
 
 if (process.argv[1] && import.meta.url.endsWith(basename(process.argv[1]))) {

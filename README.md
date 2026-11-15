@@ -55,7 +55,7 @@ A check is a command that exited successfully and is a test runner, linter, type
 
 At stop it blocks only when the latest code change is newer than the latest successful check. It lets the turn end when only documentation changed, when it has already asked once for the same change, when the session is waiting on background tasks, and on any internal error.
 
-Claude Code reports success and failure as separate events, so the gate never guesses from output text. Its state is a small JSON file in the OS temp directory holding counters only; no commands, paths or output are stored.
+Claude Code reports success and failure as separate events, so the gate never guesses from output text. Its state is a small JSON file per session under `~/.claude/fablize-gate/` holding counters only; no commands, paths or output are stored.
 
 Known limits: a shell command that edits files in a way the gate does not recognise is not counted as a change, and the gate cannot tell whether a check was the right check. The procedures in the skill cover that part.
 
