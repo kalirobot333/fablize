@@ -3,6 +3,25 @@
 All notable changes to fablize are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/); versioning is [SemVer](https://semver.org/).
 
+## [3.0.0] — 2026-11-14 (fork: kalirobot333/fablize)
+
+Rebuilt as a skill, an Opus agent and one stop gate. Entries below this one are upstream's (fivetaku/fablize).
+
+### Added
+- `agents/fablize.md` — Opus agent at high effort with the skill preloaded and the gate attached.
+- `skills/fablize/scripts/gate.mjs` — dependency-free Node gate on PostToolUse, PostToolUseFailure and Stop. Blocks once when code changed after the last successful check.
+- `scripts/install.mjs` — user-level install and uninstall; does not touch settings.json or CLAUDE.md.
+- `tests/gate.test.mjs` — 18 cases for the gate's decisions.
+- Report templates, a report contract (`Verified:` / `Not verified:`) and a closing self-check in the skill.
+
+### Changed
+- The investigation and render-and-look procedures are inline in `SKILL.md`.
+- The gate is active only while the skill or agent is in use, not on every prompt.
+- Success and failure come from Claude Code's separate hook events, not from output text.
+
+### Removed
+- Per-prompt router and task-mode hooks, text-based failure detection, `goals.py`, the measurement scripts and protocol, the setup scripts (CLAUDE.md injection, transcript language scan, GitHub star prompt), the unregistered early-stop hook, the Korean README, and all Python and bash hook code.
+
 ## [2.1.1] — 2026-07-06
 
 동의 우선(consent-first). 셋업의 무고지 자동 star를 제거하고, 커뮤니티가 보고한 보안·라이선스 이슈를 정리했다.
