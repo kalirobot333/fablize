@@ -1,0 +1,1 @@
+`node gen.js` in this folder reads data.json and writes chart.svg, a bar chart. Add the numeric value as a label above each bar. Each label must be fully visible and centred on its bar, whatever data is in data.json. Keep the bars as `<rect class="bar">` elements and the labels as `<text>` elements. Only work inside this folder.

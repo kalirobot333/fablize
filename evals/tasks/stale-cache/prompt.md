@@ -1,0 +1,1 @@
+Running `python report.py` in this folder shows the wrong net total for 2026-03-02, and it logs a warning about the rates service. Find out why and fix it. Done means report.py prints the expected totals. Only work inside this folder; use `python`, not `python3`.

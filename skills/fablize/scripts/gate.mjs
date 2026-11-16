@@ -38,6 +38,7 @@ const CHECK_RE = new RegExp(
     // running the thing itself
     String.raw`(^|[;&|]\s*)(node|python[0-9.]*|py|bash|sh|pwsh|powershell)\s+[^-\s]\S*`,
     String.raw`\b(node\s+(-e|-p|--eval|--print)|python[0-9.]*\s+-c)\s`,
+    String.raw`\b(node|python[0-9.]*)\s+-(\s|$|<)`, // script on stdin, e.g. a heredoc
     String.raw`\b(go|cargo|deno|bun)\s+run\b`,
     // hitting a local server
     String.raw`\bcurl\b.*\b(localhost|127\.0\.0\.1)\b`,
@@ -54,7 +55,8 @@ const MUTATE_RE = new RegExp(
     String.raw`\bsed\s+(-\w+\s+)*-i`,
     String.raw`\b(mv|cp|rm|tee|patch|truncate)\s`,
     String.raw`\bgit\s+(apply|checkout|restore|reset|stash|merge|rebase|cherry-pick|revert)\b`,
-    String.raw`(^|[^0-9&>])>{1,2}\s*(?!/dev/null|&|\s*$)\S`,
+    // a redirect to a file; not "=>", "->", ">=", "2>&1" or "> /dev/null"
+    String.raw`(^|[^0-9&>=\-<])>{1,2}(?![=>&])\s*(?!/dev/null|&|\s*$)\S`,
   ].join('|'),
   'i',
 );
@@ -110,6 +112,13 @@ function bashChangedPaths(resp) {
   return Array.isArray(diff.changedFiles) || Array.isArray(diff.files) ? [] : null;
 }
 
+// Drops heredoc bodies (`cmd <<'EOF' ... EOF`), which are script text fed to
+// the command, not shell syntax: an arrow function or comparison inside them
+// must not read as a redirect. The command line itself is kept.
+export function stripHeredocs(command) {
+  return command.replace(/<<-?\s*(['"]?)(\w+)\1([^\n]*)\n[\s\S]*?\n\s*\2[ \t]*(?=\n|$)/g, '<<$2$3');
+}
+
 // Returns { change: bool, check: bool } for one successful tool call.
 export function classify(input) {
   const tool = String(input.tool_name || '');
@@ -118,7 +127,7 @@ export function classify(input) {
     return { change: pathKind(ti.file_path || ti.notebook_path) === 'code', check: false };
   }
   if (tool === 'Bash' || tool === 'PowerShell') {
-    const command = String(ti.command || '');
+    const command = stripHeredocs(String(ti.command || ''));
     const paths = bashChangedPaths(input.tool_response);
     const change = paths ? paths.some((p) => pathKind(p) === 'code') : MUTATE_RE.test(command);
     return { change, check: CHECK_RE.test(command) };

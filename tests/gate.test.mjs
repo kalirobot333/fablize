@@ -1,4 +1,4 @@
-// Run: node --test
+// Run: node --test tests/gate.test.mjs
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
 import { mkdtempSync } from 'node:fs';
@@ -125,6 +125,30 @@ test('an inline one-liner that runs the code counts as a check', () => {
   edit(s, 'calc.js');
   bash(s, `node -e "console.log(require('./calc.js').add(2,3))"`);
   assert.equal(s.stop(), null);
+});
+
+test('a heredoc script is a check, and its arrow functions are not writes', () => {
+  const s = session();
+  bash(s, "cd work && node - <<'EOF'; echo \"exit: $?\"\nconst f = (x) => x > 1 ? 2 : 3;\nif (a >= b) console.log(f(2));\nEOF");
+  assert.equal(s.stop(), null);
+
+  const t = session();
+  edit(t, 'app.js');
+  bash(t, "python - <<EOF\nimport app\nprint(app.main() > 0)\nEOF");
+  assert.equal(t.stop(), null);
+});
+
+test('arrows and comparisons outside heredocs are not writes', () => {
+  const s = session();
+  bash(s, `node -e "[1,2].map(x => x * 2)"`);
+  bash(s, 'test 3 -ge 2 && echo ok 2>&1');
+  assert.equal(s.stop(), null);
+});
+
+test('a heredoc redirected into a file is still a write', () => {
+  const s = session();
+  bash(s, "cat > src/app.js <<'EOF'\nmodule.exports = () => 1;\nEOF");
+  assert.equal(s.stop().decision, 'block');
 });
 
 test('screenshot or image read counts as a check', () => {

@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pricing</title>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: system-ui, sans-serif; color: #1b1b1f; background: #f6f6f8; }
+  header { padding: 32px 16px 8px; text-align: center; }
+  h1 { margin: 0 0 8px; font-size: 2rem; }
+  .plans { display: flex; justify-content: center; gap: 24px; padding: 24px 16px 48px; }
+  .plan { flex: 0 0 240px; background: #fff; border: 1px solid #ddd; border-radius: 12px; padding: 24px; }
+  .plan h2 { margin: 0 0 8px; font-size: 1.25rem; }
+  .price { font-size: 2rem; font-weight: 700; margin: 8px 0 16px; }
+  .plan ul { padding-left: 18px; margin: 0 0 20px; line-height: 1.6; }
+  .plan a { display: block; text-align: center; padding: 10px; border-radius: 8px; background: #3b5bdb; color: #fff; text-decoration: none; }
+  .plan.featured { border: 2px solid #3b5bdb; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Simple pricing</h1>
+  <p>Pick the plan that fits your team.</p>
+</header>
+<main class="plans">
+  <section class="plan">
+    <h2>Starter</h2>
+    <div class="price" data-monthly="10">$10/mo</div>
+    <ul><li>1 project</li><li>Email support</li></ul>
+    <a href="#">Choose Starter</a>
+  </section>
+  <section class="plan featured">
+    <h2>Team</h2>
+    <div class="price" data-monthly="25">$25/mo</div>
+    <ul><li>10 projects</li><li>Shared workspaces</li><li>Priority support</li></ul>
+    <a href="#">Choose Team</a>
+  </section>
+  <section class="plan">
+    <h2>Business</h2>
+    <div class="price" data-monthly="50">$50/mo</div>
+    <ul><li>Unlimited projects</li><li>SSO</li><li>Audit log</li></ul>
+    <a href="#">Choose Business</a>
+  </section>
+</main>
+</body>
+</html>

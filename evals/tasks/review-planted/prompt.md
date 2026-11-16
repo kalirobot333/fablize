@@ -1,0 +1,1 @@
+Review the change described in PR.md (the code is in src/) for bugs before it is merged. Do not edit the code. Write your findings to REVIEW.md in this folder, most serious first, each with file:line and what goes wrong. Only work inside this folder.

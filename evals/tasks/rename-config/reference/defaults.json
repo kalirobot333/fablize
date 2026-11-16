@@ -1,0 +1,5 @@
+{
+  "baseUrl": "http://localhost:8080",
+  "requestTimeout": 5000,
+  "retries": 2
+}

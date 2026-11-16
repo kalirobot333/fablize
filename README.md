@@ -62,7 +62,7 @@ Known limits: a shell command that edits files in a way the gate does not recogn
 ## Tests
 
 ```bash
-node --test
+node --test tests/gate.test.mjs
 ```
 
 These cover the gate's decisions with synthetic hook payloads. There is no automated test of model behaviour.

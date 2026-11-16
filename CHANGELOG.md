@@ -11,7 +11,7 @@ Rebuilt as a skill, an Opus agent and one stop gate. Entries below this one are 
 - `agents/fablize.md` — Opus agent at high effort with the skill preloaded and the gate attached.
 - `skills/fablize/scripts/gate.mjs` — dependency-free Node gate on PostToolUse, PostToolUseFailure and Stop. Blocks once when code changed after the last successful check.
 - `scripts/install.mjs` — user-level install and uninstall; does not touch settings.json or CLAUDE.md.
-- `tests/gate.test.mjs` — 18 cases for the gate's decisions.
+- `tests/gate.test.mjs` — 21 cases for the gate's decisions.
 - Report templates, a report contract (`Verified:` / `Not verified:`) and a closing self-check in the skill.
 
 ### Changed
